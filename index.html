@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銷貨紀錄系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --text: #1a1917;
+    --text-2: #6b6860;
+    --text-3: #a09e99;
+    --green: #2d6a4f;
+    --green-light: #e8f5ee;
+    --green-mid: #52b788;
+    --red: #c1121f;
+    --red-light: #fdecea;
+    --amber: #b45309;
+    --amber-light: #fef3c7;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 32px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 15px; font-weight: 700; color: var(--green); padding: 16px 0; letter-spacing: 0.5px; white-space: nowrap; }
+  .nav { display: flex; gap: 2px; }
+  .nav-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-2); border-radius: 8px; transition: all 0.15s; font-weight: 500; white-space: nowrap; }
+  .nav-btn:hover { background: var(--bg); color: var(--text); }
+  .nav-btn.active { background: var(--green-light); color: var(--green); }
+
+  .main { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .stat-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+  .stat-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 14px; letter-spacing: 0.3px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.3px; }
+  .field input, .field select, .field textarea {
+    padding: 8px 10px; font-size: 13px; font-family: inherit;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text); outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--green-mid); background: var(--surface); }
+
+  .btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; cursor: pointer; background: var(--surface); color: var(--text); font-weight: 500; transition: all 0.15s; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-primary:hover { background: #245c43; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: var(--bg); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafaf8; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .badge-ok { background: var(--green-light); color: var(--green); }
+  .badge-out { background: var(--red-light); color: var(--red); }
+
+  .msg { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; font-weight: 500; }
+  .msg-ok { background: var(--green-light); color: var(--green); display: block; }
+  .msg-err { background: var(--red-light); color: var(--red); display: block; }
+  .msg-load { background: var(--amber-light); color: var(--amber); display: block; }
+
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .search-row input { flex: 1; min-width: 140px; padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; }
+  .search-row input:focus { border-color: var(--green-mid); background: var(--surface); }
+
+  .bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 11px; color: var(--text-2); width: 40px; text-align: right; }
+  .bar-bg { flex: 1; background: var(--bg); border-radius: 4px; height: 20px; overflow: hidden; border: 1px solid var(--border); }
+  .bar-fill { height: 100%; background: var(--green-mid); border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; min-width: 4px; transition: width 0.6s ease; }
+  .bar-val { font-size: 10px; font-weight: 700; color: #fff; }
+
+  .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .item-row:last-of-type { border-bottom: none; }
+  .del-btn { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; color: var(--text-3); font-size: 14px; transition: all 0.15s; }
+  .del-btn:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
+
+  .total-area { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 12px 0 10px; border-top: 1px solid var(--border); margin-top: 4px; }
+  .total-label { font-size: 13px; color: var(--text-2); }
+  .total-value { font-size: 22px; font-weight: 700; color: var(--green); }
+
+  .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 28px; text-align: center; color: var(--text-2); cursor: pointer; transition: all 0.15s; margin-bottom: 14px; }
+  .upload-zone:hover { border-color: var(--green-mid); background: var(--green-light); color: var(--green); }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; font-weight: 500; }
+  .upload-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+  .empty { text-align: center; padding: 32px; color: var(--text-3); font-size: 13px; }
+
+  @media (max-width: 640px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .item-row { grid-template-columns: 1fr 1fr auto; }
+    .header { padding: 0 14px; gap: 8px; }
+    .nav-btn { padding: 8px 10px; font-size: 12px; }
+    .main { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">銷貨紀錄系統</div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('dash', this)">總覽</button>
+    <button class="nav-btn" onclick="showPage('sale', this)">新增銷售</button>
+    <button class="nav-btn" onclick="showPage('rec', this)">銷售紀錄</button>
+    <button class="nav-btn" onclick="showPage('inv', this)">庫存管理</button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <!-- 總覽 -->
+  <div id="page-dash" class="page active">
+    <div id="msg-dash" class="msg msg-load">連線中...</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">今日銷售額</div>
+        <div class="stat-value" id="d-today">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">本月銷售額</div>
+        <div class="stat-value" id="d-month">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">本月筆數</div>
+        <div class="stat-value" id="d-count">—</div>
+        <div class="stat-sub" id="d-avg"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">近 6 個月銷售</div>
+        <div class="bar-wrap" id="d-chart"><div class="empty">載入中...</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">熱銷商品 Top 5</div>
+        <table>
+          <thead><tr><th>商品名稱</th><th style="text-align:right">金額</th></tr></thead>
+          <tbody id="d-top"><tr><td colspan="2" class="empty">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增銷售 -->
+  <div id="page-sale" class="page">
+    <div class="card">
+      <div class="card-title">新增銷售紀錄</div>
+      <div id="msg-sale" class="msg"></div>
+      <div class="form-row">
+        <div class="field"><label>銷售日期</label><input type="date" id="s-date"></div>
+        <div class="field"><label>客戶名稱</label><input type="text" id="s-customer" placeholder="輸入客戶姓名或公司名稱"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-2);letter-spacing:0.3px;margin-bottom:10px">商品明細</div>
+      <div id="items-wrap"></div>
+      <button class="btn btn-sm" onclick="addItem()" style="margin-bottom:12px">＋ 新增品項</button>
+      <div class="total-area">
+        <span class="total-label">總金額</span>
+        <span class="total-value" id="s-total">$0</span>
+      </div>
+      <div class="field" style="margin-bottom:12px"><label>備註</label><input type="text" id="s-note" placeholder="選填"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="resetSale()">清除</button>
+        <button class="btn btn-primary" onclick="submitSale()">儲存紀錄</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 銷售紀錄 -->
+  <div id="page-rec" class="page">
+    <div class="card">
+      <div class="card-title">銷售紀錄查詢</div>
+      <div class="search-row">
+        <input type="text" id="r-kw" placeholder="搜尋客戶名稱或商品...">
+        <input type="date" id="r-from" style="width:140px">
+        <input type="date" id="r-to" style="width:140px">
+        <button class="btn" onclick="loadRec()">搜尋</button>
+        <button class="btn" onclick="exportXlsx()">↓ 匯出 Excel</button>
+      </div>
+      <div id="msg-rec" class="msg"></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>日期</th><th>客戶</th><th>商品明細</th><th style="text-align:right">總金額</th><th>備註</th></tr></thead>
+          <tbody id="rec-body"><tr><td colspan="5" class="empty">請點「搜尋」載入資料</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 庫存管理 -->
+  <div id="page-inv" class="page">
+    <div class="card">
+      <div class="card-title">批量匯入商品</div>
+      <div id="msg-inv" class="msg"></div>
+      <div class="upload-zone" onclick="document.getElementById('xlsx-input').click()">
+        <div class="upload-icon">↑</div>
+        <div class="upload-text">點擊上傳 Excel 檔案</div>
+        <div class="upload-hint">欄位順序：商品名稱 / 單價 / 庫存數量</div>
+      </div>
+      <input type="file" id="xlsx-input" accept=".xlsx" style="display:none" onchange="importXlsx(this)">
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        庫存狀況
+        <button class="btn btn-sm" onclick="loadInv()">↻ 重新整理</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>商品名稱</th><th style="text-align:right">單價</th><th style="text-align:right">庫存數量</th><th>狀態</th></tr></thead>
+          <tbody id="inv-body"><tr><td colspan="4" class="empty">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbyLux08_7XMSQ3S14KXhoT5NfcN99ywLIrVNTYPGvqyxB7GI_x7t44YrpQOKsHqqCZLKg/exec';
+let products = [];
+let cbIdx = 0;
+
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const cb = '__gs_' + (cbIdx++);
+    const timer = setTimeout(() => { cleanup(); reject(new Error('連線逾時，請重試')); }, 20000);
+    function cleanup() { clearTimeout(timer); delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    const s = document.createElement('script');
+    s.onerror = () => { cleanup(); reject(new Error('網路錯誤')); };
+    s.src = API + '?' + new URLSearchParams({ ...params, callback: cb });
+    document.head.appendChild(s);
+  });
+}
+
+function fmt(n) { return '$' + Math.round(Number(n) || 0).toLocaleString('zh-TW'); }
+
+function showMsg(id, type, text) {
+  const el = document.getElementById(id);
+  el.className = 'msg msg-' + type;
+  el.textContent = text;
+  el.style.display = 'block';
+  if (type === 'ok') setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'dash') loadDash();
+  if (name === 'sale') initSale();
+  if (name === 'inv') loadInv();
+}
+
+/* ── 總覽 ── */
+function loadDash() {
+  showMsg('msg-dash', 'load', '連線中...');
+  jsonp({ action: 'getDashboard' }).then(d => {
+    document.getElementById('msg-dash').style.display = 'none';
+    document.getElementById('d-today').textContent = fmt(d.todayTotal);
+    document.getElementById('d-month').textContent = fmt(d.monthTotal);
+    document.getElementById('d-count').textContent = (d.monthCount || 0) + ' 筆';
+    document.getElementById('d-avg').textContent = d.monthCount ? '平均單筆 ' + fmt((d.monthTotal || 0) / d.monthCount) : '';
+
+    const monthly = d.monthly || [];
+    const maxV = Math.max(...monthly.map(m => m.total), 1);
+    document.getElementById('d-chart').innerHTML = monthly.length
+      ? monthly.map(m => {
+          const pct = Math.round((m.total / maxV) * 100);
+          const lbl = (m.month || '').slice(5) + '月';
+          return `<div class="bar-row">
+            <span class="bar-label">${lbl}</span>
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"><span class="bar-val">${fmt(m.total)}</span></div></div>
+          </div>`;
+        }).join('')
+      : '<div class="empty">尚無銷售資料</div>';
+
+    const top = d.topProducts || [];
+    document.getElementById('d-top').innerHTML = top.length
+      ? top.map(p => `<tr><td>${p.name}</td><td style="text-align:right;font-weight:700">${fmt(p.amount)}</td></tr>`).join('')
+      : '<tr><td colspan="2" class="empty">尚無資料</td></tr>';
+  }).catch(err => showMsg('msg-dash', 'err', '連線失敗：' + err.message));
+}
+
+/* ── 新增銷售 ── */
+function initSale() {
+  document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('s-customer').value = '';
+  document.getElementById('s-note').value = '';
+  document.getElementById('items-wrap').innerHTML = '';
+  document.getElementById('msg-sale').style.display = 'none';
+  document.getElementById('s-total').textContent = '$0';
+  jsonp({ action: 'getProducts' }).then(data => {
+    products = data || [];
+    addItem();
+  }).catch(() => { products = []; addItem(); });
+}
+
+function addItem() {
+  const idx = 'i' + Date.now();
+  const opts = '<option value="">選擇商品...</option>' +
+    products.map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">${p.name}（庫存：${p.stock}）</option>`).join('');
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.id = idx;
+  div.innerHTML = `
+    <div class="field" style="margin:0"><label>商品</label>
+      <select onchange="onSelProduct(this)">${opts}</select>
+    </div>
+    <div class="field" style="margin:0"><label>數量</label>
+      <input type="number" min="1" value="1" oninput="calcTotal()">
+    </div>
+    <div class="field" style="margin:0"><label>單價</label>
+      <input type="number" min="0" value="0" class="price-f" oninput="calcTotal()">
+    </div>
+    <button class="del-btn" onclick="document.getElementById('${idx}').remove();calcTotal()" title="刪除">✕</button>`;
+  document.getElementById('items-wrap').appendChild(div);
+}
+
+function onSelProduct(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  sel.closest('.item-row').querySelector('.price-f').value = opt.dataset.price || 0;
+  calcTotal();
+}
+
+function calcTotal() {
+  let t = 0;
+  document.querySelectorAll('.item-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    t += (Number(inputs[0].value) || 0) * (Number(inputs[1].value) || 0);
+  });
+  document.getElementById('s-total').textContent = '$' + Math.round(t).toLocaleString('zh-TW');
+}
+
+function resetSale() { initSale(); }
+
+function submitSale() {
+  const date = document.getElementById('s-date').value;
+  const customer = document.getElementById('s-customer').value.trim();
+  const note = document.getElementById('s-note').value.trim();
+  if (!date || !customer) { showMsg('msg-sale', 'err', '請填寫日期與客戶名稱'); return; }
+
+  const items = [];
+  let valid = true;
+  document.querySelectorAll('.item-row').forEach(row => {
+    const sel = row.querySelector('select');
+    const inputs = row.querySelectorAll('input');
+    const pid = sel.value;
+    const pname = (sel.options[sel.selectedIndex]?.text || '').replace(/（.*）/, '');
+    const qty = Number(inputs[0].value);
+    const price = Number(inputs[1].value);
+    if (!pid || qty <= 0) { valid = false; return; }
+    items.push({ productId: pid, productName: pname, qty, price });
+  });
+
+  if (!valid || !items.length) { showMsg('msg-sale', 'err', '請選擇商品並填寫有效數量'); return; }
+
+  showMsg('msg-sale', 'load', '儲存中...');
+  jsonp({ action: 'addSale', data: JSON.stringify({ customer, note, items }) })
+    .then(r => {
+      if (r.success) { showMsg('msg-sale', 'ok', '✓ 銷售紀錄已儲存，庫存已自動扣減！'); resetSale(); }
+      else showMsg('msg-sale', 'err', '儲存失敗：' + (r.error || '未知錯誤'));
+    }).catch(err => showMsg('msg-sale', 'err', '連線失敗：' + err.message));
+}
+
+/* ── 銷售紀錄 ── */
+function loadRec() {
+  const kw = document.getElementById('r-kw').value;
+  const from = document.getElementById('r-from').value;
+  const to = document.getElementById('r-to').value;
+  showMsg('msg-rec', 'load', '載入中...');
+  jsonp({ action: 'getSales', keyword: kw, from, to }).then(data => {
+    document.getElementById('msg-rec').style.display = 'none';
+    const rows = data || [];
+    document.getElementById('rec-body').innerHTML = rows.length
+      ? rows.map(r => {
+          const detail = (r.items || []).map(i => `${i.productName} ×${i.qty}`).join('、');
+          return `<tr>
+            <td>${r.date}</td>
+            <td><strong>${r.customer}</strong></td>
+            <td style="color:var(--text-2);font-size:12px">${detail}</td>
+            <td style="text-align:right;font-weight:700">${fmt(r.total)}</td>
+            <td style="color:var(--text-3);font-size:12px">${r.note || ''}</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="5" class="empty">查無符合條件的資料</td></tr>';
+  }).catch(err => showMsg('msg-rec', 'err', '載入失敗：' + err.message));
+}
+
+function exportXlsx() {
+  const rows = [['日期', '客戶名稱', '商品明細', '總金額', '備註']];
+  document.querySelectorAll('#rec-body tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    if (tds.length >= 4) rows.push([tds[0].textContent, tds[1].textContent, tds[2].textContent, tds[3].textContent, tds[4]?.textContent || '']);
+  });
+  if (rows.length <= 1) { alert('請先搜尋載入資料再匯出'); return; }
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{ wch: 12 }, { wch: 18 }, { wch: 32 }, { wch: 12 }, { wch: 20 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '銷售紀錄');
+  XLSX.writeFile(wb, '銷售紀錄_' + new Date().toISOString().split('T')[0] + '.xlsx');
+}
+
+/* ── 庫存管理 ── */
+function loadInv() {
+  jsonp({ action: 'getProducts' }).then(data => {
+    products = data || [];
+    if (!products.length) {
+      document.getElementById('inv-body').innerHTML = '<tr><td colspan="4" class="empty">尚無商品，請先從上方匯入</td></tr>';
+      return;
+    }
+    document.getElementById('inv-body').innerHTML = products.map(p => {
+      const out = Number(p.stock) <= 0;
+      return `<tr>
+        <td><strong>${p.name}</strong></td>
+        <td style="text-align:right">$${Number(p.price).toLocaleString('zh-TW')}</td>
+        <td style="text-align:right;${out ? 'color:var(--red);font-weight:700' : ''}">${p.stock}</td>
+        <td>${out ? '<span class="badge badge-out">缺貨</span>' : '<span class="badge badge-ok">正常</span>'}</td>
+      </tr>`;
+    }).join('');
+  }).catch(err => {
+    document.getElementById('inv-body').innerHTML = `<tr><td colspan="4" style="color:var(--red);padding:12px">載入失敗：${err.message}</td></tr>`;
+  });
+}
+
+function importXlsx(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const data = rows.slice(1).filter(r => r[0]).map(r => ({
+        name: String(r[0]).trim(),
+        price: Number(r[1]) || 0,
+        stock: Number(r[2]) || 0
+      }));
+      if (!data.length) { showMsg('msg-inv', 'err', '找不到有效資料，請確認欄位格式'); return; }
+      showMsg('msg-inv', 'load', `讀取到 ${data.length} 筆資料，上傳中...`);
+      jsonp({ action: 'importProducts', data: JSON.stringify(data) }).then(r => {
+        if (r.success) { showMsg('msg-inv', 'ok', `✓ 匯入完成！新增 ${r.added} 筆，更新 ${r.updated} 筆`); loadInv(); }
+        else showMsg('msg-inv', 'err', '匯入失敗：' + (r.error || ''));
+      }).catch(err => showMsg('msg-inv', 'err', '連線失敗：' + err.message));
+    } catch(e) { showMsg('msg-inv', 'err', '讀取檔案失敗：' + e.message); }
+  };
+  reader.readAsBinaryString(file);
+  input.value = '';
+}
+
+loadDash();
+</script>
+</body>
+</html>
