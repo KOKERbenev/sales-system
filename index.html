@@ -57,7 +57,6 @@
   .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
   .btn-primary:hover { background: #245c43; }
   .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .btn-danger { background: var(--red-light); color: var(--red); border-color: var(--red); }
   .btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -97,15 +96,24 @@
 
   .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px; text-align: center; color: var(--text-2); cursor: pointer; transition: all 0.15s; margin-bottom: 14px; }
   .upload-zone:hover { border-color: var(--green-mid); background: var(--green-light); color: var(--green); }
-  .upload-icon { font-size: 24px; margin-bottom: 6px; }
   .upload-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
-
   .empty { text-align: center; padding: 28px; color: var(--text-3); font-size: 13px; }
-
-  /* 編輯 inline */
   .edit-input { padding: 5px 7px; font-size: 13px; font-family: inherit; border: 1px solid var(--green-mid); border-radius: 6px; background: #fff; color: var(--text); outline: none; width: 100%; }
-  .edit-input:focus { border-color: var(--green); }
-  .action-btns { display: flex; gap: 4px; }
+  .action-btns { display: flex; gap: 4px; justify-content: center; }
+
+  /* ── 可搜尋下拉 ── */
+  .prod-search-wrap { position: relative; }
+  .prod-search-input { width: 100%; padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; cursor: pointer; }
+  .prod-search-input:focus { border-color: var(--green-mid); background: var(--surface); }
+  .prod-search-input.selected { background: var(--green-light); border-color: var(--green-mid); font-weight: 500; }
+  .prod-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 200; max-height: 220px; overflow-y: auto; display: none; }
+  .prod-dropdown.open { display: block; }
+  .prod-option { padding: 9px 12px; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .prod-option:hover, .prod-option.highlighted { background: var(--green-light); color: var(--green); }
+  .prod-option .p-name { flex: 1; }
+  .prod-option .p-stock { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+  .prod-option .p-stock.out { color: var(--red); font-weight: 700; }
+  .prod-no-result { padding: 12px; font-size: 13px; color: var(--text-3); text-align: center; }
 
   @media (max-width: 640px) {
     .stat-grid { grid-template-columns: 1fr 1fr; }
@@ -204,7 +212,7 @@
       <div class="card-title">批量匯入商品</div>
       <div id="msg-inv" class="msg"></div>
       <div class="upload-zone" onclick="document.getElementById('xlsx-input').click()">
-        <div class="upload-icon">↑</div>
+        <div style="font-size:24px;margin-bottom:6px">↑</div>
         <div style="font-size:13px;font-weight:500">點擊上傳 Excel 檔案</div>
         <div class="upload-hint">欄位順序：商品名稱 / 單價 / 庫存數量｜同名商品自動跳過，不覆蓋</div>
       </div>
@@ -247,6 +255,7 @@ function jsonp(params) {
 }
 
 function fmt(n) { return '$' + Math.round(Number(n) || 0).toLocaleString('zh-TW'); }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function showMsg(id, type, text) {
   const el = document.getElementById(id);
@@ -274,7 +283,7 @@ function loadDash() {
     document.getElementById('d-today').textContent = fmt(d.todayTotal);
     document.getElementById('d-month').textContent = fmt(d.monthTotal);
     document.getElementById('d-count').textContent = (d.monthCount || 0) + ' 筆';
-    document.getElementById('d-avg').textContent = d.monthCount ? '平均單筆 ' + fmt((d.monthTotal || 0) / d.monthCount) : '';
+    document.getElementById('d-avg').textContent = d.monthCount ? '平均單筆 ' + fmt((d.monthTotal||0)/d.monthCount) : '';
     const monthly = d.monthly || [];
     const maxV = Math.max(...monthly.map(m => m.total), 1);
     document.getElementById('d-chart').innerHTML = monthly.length
@@ -282,12 +291,97 @@ function loadDash() {
       : '<div class="empty">尚無銷售資料</div>';
     const top = d.topProducts || [];
     document.getElementById('d-top').innerHTML = top.length
-      ? top.map(p => `<tr><td>${p.name}</td><td style="text-align:right;font-weight:700">${fmt(p.amount)}</td></tr>`).join('')
+      ? top.map(p => `<tr><td>${escHtml(p.name)}</td><td style="text-align:right;font-weight:700">${fmt(p.amount)}</td></tr>`).join('')
       : '<tr><td colspan="2" class="empty">尚無資料</td></tr>';
   }).catch(err => showMsg('msg-dash', 'err', '連線失敗：' + err.message));
 }
 
+/* ── 可搜尋商品選擇器 ── */
+function createProductPicker(containerId) {
+  const wrap = document.getElementById(containerId);
+  let selectedProduct = null;
+  let highlightIdx = -1;
+  let dropdownItems = [];
+
+  const input = wrap.querySelector('.prod-search-input');
+  const dropdown = wrap.querySelector('.prod-dropdown');
+
+  function getFiltered(kw) {
+    if (!kw.trim()) return products;
+    const k = kw.toLowerCase();
+    return products.filter(p => p.name.toLowerCase().includes(k));
+  }
+
+  function renderDropdown(kw) {
+    const list = getFiltered(kw);
+    dropdownItems = list;
+    highlightIdx = -1;
+    if (!list.length) {
+      dropdown.innerHTML = '<div class="prod-no-result">找不到符合的商品</div>';
+    } else {
+      dropdown.innerHTML = list.map((p, i) => {
+        const out = Number(p.stock) <= 0;
+        return `<div class="prod-option" data-idx="${i}">
+          <span class="p-name">${escHtml(p.name)}</span>
+          <span class="p-stock ${out ? 'out' : ''}">庫存：${p.stock}${out ? '（缺貨）' : ''}</span>
+        </div>`;
+      }).join('');
+      dropdown.querySelectorAll('.prod-option').forEach(opt => {
+        opt.addEventListener('mousedown', e => {
+          e.preventDefault();
+          const idx = Number(opt.dataset.idx);
+          selectProduct(dropdownItems[idx]);
+        });
+      });
+    }
+    dropdown.classList.add('open');
+  }
+
+  function selectProduct(p) {
+    selectedProduct = p;
+    input.value = p.name;
+    input.classList.add('selected');
+    dropdown.classList.remove('open');
+    wrap.dispatchEvent(new CustomEvent('productSelected', { detail: p }));
+  }
+
+  function clearSelection() {
+    selectedProduct = null;
+    input.classList.remove('selected');
+  }
+
+  input.addEventListener('focus', () => { renderDropdown(input.value); });
+  input.addEventListener('input', () => { clearSelection(); renderDropdown(input.value); });
+  input.addEventListener('blur', () => { setTimeout(() => dropdown.classList.remove('open'), 150); });
+  input.addEventListener('keydown', e => {
+    const opts = dropdown.querySelectorAll('.prod-option');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      highlightIdx = Math.min(highlightIdx + 1, dropdownItems.length - 1);
+      opts.forEach((o, i) => o.classList.toggle('highlighted', i === highlightIdx));
+      if (opts[highlightIdx]) opts[highlightIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlightIdx = Math.max(highlightIdx - 1, 0);
+      opts.forEach((o, i) => o.classList.toggle('highlighted', i === highlightIdx));
+      if (opts[highlightIdx]) opts[highlightIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (highlightIdx >= 0 && dropdownItems[highlightIdx]) selectProduct(dropdownItems[highlightIdx]);
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  return {
+    getSelected: () => selectedProduct,
+    reset: () => { input.value = ''; clearSelection(); dropdown.classList.remove('open'); }
+  };
+}
+
 /* ── 新增銷售 ── */
+const pickers = {};
+
 function initSale() {
   document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('s-customer').value = '';
@@ -295,31 +389,40 @@ function initSale() {
   document.getElementById('items-wrap').innerHTML = '';
   document.getElementById('msg-sale').style.display = 'none';
   document.getElementById('s-total').textContent = '$0';
+  Object.keys(pickers).forEach(k => delete pickers[k]);
   jsonp({ action: 'getProducts' }).then(data => { products = data || []; addItem(); }).catch(() => { products = []; addItem(); });
 }
 
 function addItem() {
   const idx = 'i' + Date.now();
-  const opts = '<option value="">選擇商品...</option>' + products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}（庫存：${p.stock}）</option>`).join('');
   const div = document.createElement('div');
   div.className = 'item-row'; div.id = idx;
   div.innerHTML = `
-    <div class="field" style="margin:0"><label>商品</label><select onchange="onSelProd(this)">${opts}</select></div>
+    <div class="field" style="margin:0">
+      <label>商品（可輸入關鍵字搜尋）</label>
+      <div class="prod-search-wrap" id="pw-${idx}">
+        <input class="prod-search-input" placeholder="輸入關鍵字或點擊選擇..." autocomplete="off">
+        <div class="prod-dropdown"></div>
+      </div>
+    </div>
     <div class="field" style="margin:0"><label>數量</label><input type="number" min="1" value="1" oninput="calcTotal()"></div>
     <div class="field" style="margin:0"><label>單價</label><input type="number" min="0" value="0" class="price-f" oninput="calcTotal()"></div>
     <button class="del-btn" onclick="document.getElementById('${idx}').remove();calcTotal()" title="刪除">✕</button>`;
   document.getElementById('items-wrap').appendChild(div);
-}
 
-function onSelProd(sel) {
-  sel.closest('.item-row').querySelector('.price-f').value = sel.options[sel.selectedIndex].dataset.price || 0;
-  calcTotal();
+  const picker = createProductPicker('pw-' + idx);
+  pickers[idx] = picker;
+
+  document.getElementById('pw-' + idx).addEventListener('productSelected', e => {
+    div.querySelector('.price-f').value = e.detail.price || 0;
+    calcTotal();
+  });
 }
 
 function calcTotal() {
   let t = 0;
   document.querySelectorAll('.item-row').forEach(row => {
-    const ins = row.querySelectorAll('input');
+    const ins = row.querySelectorAll('input[type="number"]');
     t += (Number(ins[0].value)||0) * (Number(ins[1].value)||0);
   });
   document.getElementById('s-total').textContent = '$' + Math.round(t).toLocaleString('zh-TW');
@@ -332,19 +435,25 @@ function submitSale() {
   const customer = document.getElementById('s-customer').value.trim();
   const note = document.getElementById('s-note').value.trim();
   if (!date || !customer) { showMsg('msg-sale', 'err', '請填寫日期與客戶名稱'); return; }
+
   const items = []; let valid = true;
   document.querySelectorAll('.item-row').forEach(row => {
-    const sel = row.querySelector('select');
-    const ins = row.querySelectorAll('input');
-    if (!sel.value || Number(ins[0].value) <= 0) { valid = false; return; }
-    items.push({ productId: sel.value, productName: (sel.options[sel.selectedIndex]?.text||'').replace(/（.*）/,''), qty: Number(ins[0].value), price: Number(ins[1].value) });
+    const pwId = 'pw-' + row.id;
+    const picker = pickers[row.id];
+    const p = picker ? picker.getSelected() : null;
+    const ins = row.querySelectorAll('input[type="number"]');
+    const qty = Number(ins[0].value);
+    const price = Number(ins[1].value);
+    if (!p || qty <= 0) { valid = false; return; }
+    items.push({ productId: p.id, productName: p.name, qty, price });
   });
+
   if (!valid || !items.length) { showMsg('msg-sale', 'err', '請選擇商品並填寫有效數量'); return; }
   showMsg('msg-sale', 'load', '儲存中...');
   jsonp({ action: 'addSale', data: JSON.stringify({ customer, note, items }) })
     .then(r => {
       if (r.success) { showMsg('msg-sale', 'ok', '✓ 銷售紀錄已儲存，庫存已自動扣減！'); resetSale(); }
-      else showMsg('msg-sale', 'err', '儲存失敗：' + (r.error || ''));
+      else showMsg('msg-sale', 'err', '儲存失敗：' + (r.error||''));
     }).catch(err => showMsg('msg-sale', 'err', '連線失敗：' + err.message));
 }
 
@@ -360,7 +469,7 @@ function loadRec() {
     document.getElementById('rec-body').innerHTML = rows.length
       ? rows.map(r => {
           const detail = (r.items||[]).map(i=>`${i.productName} ×${i.qty}`).join('、');
-          return `<tr><td>${r.date}</td><td><strong>${r.customer}</strong></td><td style="color:var(--text-2);font-size:12px">${detail}</td><td style="text-align:right;font-weight:700">${fmt(r.total)}</td><td style="color:var(--text-3);font-size:12px">${r.note||''}</td></tr>`;
+          return `<tr><td>${r.date}</td><td><strong>${escHtml(r.customer)}</strong></td><td style="color:var(--text-2);font-size:12px">${escHtml(detail)}</td><td style="text-align:right;font-weight:700">${fmt(r.total)}</td><td style="color:var(--text-3);font-size:12px">${escHtml(r.note||'')}</td></tr>`;
         }).join('')
       : '<tr><td colspan="5" class="empty">查無符合條件的資料</td></tr>';
   }).catch(err => showMsg('msg-rec', 'err', '載入失敗：' + err.message));
@@ -382,19 +491,12 @@ function exportXlsx() {
 
 /* ── 庫存管理 ── */
 function loadInv() {
-  jsonp({ action: 'getProducts' }).then(data => {
-    products = data || [];
-    renderInv();
-  }).catch(err => {
-    document.getElementById('inv-body').innerHTML = `<tr><td colspan="5" style="color:var(--red);padding:12px">載入失敗：${err.message}</td></tr>`;
-  });
+  jsonp({ action: 'getProducts' }).then(data => { products = data || []; renderInv(); })
+    .catch(err => { document.getElementById('inv-body').innerHTML = `<tr><td colspan="5" style="color:var(--red);padding:12px">載入失敗：${err.message}</td></tr>`; });
 }
 
 function renderInv() {
-  if (!products.length) {
-    document.getElementById('inv-body').innerHTML = '<tr><td colspan="5" class="empty">尚無商品，請先從上方匯入</td></tr>';
-    return;
-  }
+  if (!products.length) { document.getElementById('inv-body').innerHTML = '<tr><td colspan="5" class="empty">尚無商品，請先從上方匯入</td></tr>'; return; }
   document.getElementById('inv-body').innerHTML = products.map(p => {
     const out = Number(p.stock) <= 0;
     return `<tr id="row-${p.id}">
@@ -402,32 +504,23 @@ function renderInv() {
       <td style="text-align:right">$${Number(p.price).toLocaleString('zh-TW')}</td>
       <td style="text-align:right;${out?'color:var(--red);font-weight:700':''}">${p.stock}</td>
       <td>${out ? '<span class="badge badge-out">缺貨</span>' : '<span class="badge badge-ok">正常</span>'}</td>
-      <td style="text-align:center">
-        <div class="action-btns" style="justify-content:center">
-          <button class="btn btn-sm" onclick="startEdit('${p.id}')">編輯</button>
-        </div>
-      </td>
+      <td><div class="action-btns"><button class="btn btn-sm" onclick="startEdit('${p.id}')">編輯</button></div></td>
     </tr>`;
   }).join('');
 }
 
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
 function startEdit(id) {
   const p = products.find(x => x.id == id);
   if (!p) return;
-  const row = document.getElementById('row-' + id);
-  row.innerHTML = `
+  document.getElementById('row-' + id).innerHTML = `
     <td><input class="edit-input" id="e-name-${id}" value="${escHtml(p.name)}"></td>
     <td><input class="edit-input" id="e-price-${id}" type="number" min="0" value="${p.price}" style="text-align:right"></td>
     <td><input class="edit-input" id="e-stock-${id}" type="number" min="0" value="${p.stock}" style="text-align:right"></td>
     <td></td>
-    <td style="text-align:center">
-      <div class="action-btns" style="justify-content:center">
-        <button class="btn btn-sm btn-primary" onclick="saveEdit('${id}')">儲存</button>
-        <button class="btn btn-sm" onclick="renderInv()">取消</button>
-      </div>
-    </td>`;
+    <td><div class="action-btns">
+      <button class="btn btn-sm btn-primary" onclick="saveEdit('${id}')">儲存</button>
+      <button class="btn btn-sm" onclick="renderInv()">取消</button>
+    </div></td>`;
   document.getElementById('e-name-' + id).focus();
 }
 
@@ -437,17 +530,14 @@ function saveEdit(id) {
   const stock = Number(document.getElementById('e-stock-' + id).value);
   if (!name) { showMsg('msg-inv2', 'err', '商品名稱不可空白'); return; }
   showMsg('msg-inv2', 'load', '儲存中...');
-  jsonp({ action: 'updateProduct', id, name, price, stock })
-    .then(r => {
-      if (r.success) {
-        const p = products.find(x => x.id == id);
-        if (p) { p.name = name; p.price = price; p.stock = stock; }
-        renderInv();
-        showMsg('msg-inv2', 'ok', '✓ 已更新商品資料');
-      } else {
-        showMsg('msg-inv2', 'err', '儲存失敗：' + (r.error || ''));
-      }
-    }).catch(err => showMsg('msg-inv2', 'err', '連線失敗：' + err.message));
+  jsonp({ action: 'updateProduct', id, name, price, stock }).then(r => {
+    if (r.success) {
+      const p = products.find(x => x.id == id);
+      if (p) { p.name = name; p.price = price; p.stock = stock; }
+      renderInv();
+      showMsg('msg-inv2', 'ok', '✓ 已更新商品資料');
+    } else { showMsg('msg-inv2', 'err', '儲存失敗：' + (r.error||'')); }
+  }).catch(err => showMsg('msg-inv2', 'err', '連線失敗：' + err.message));
 }
 
 function importXlsx(input) {
@@ -463,12 +553,8 @@ function importXlsx(input) {
       if (!data.length) { showMsg('msg-inv', 'err', '找不到有效資料，請確認欄位格式'); return; }
       showMsg('msg-inv', 'load', `讀取到 ${data.length} 筆資料，上傳中...`);
       jsonp({ action: 'importProducts', data: JSON.stringify(data) }).then(r => {
-        if (r.success) {
-          showMsg('msg-inv', 'ok', `✓ 匯入完成！新增 ${r.added} 筆，跳過已有商品 ${r.skipped} 筆`);
-          loadInv();
-        } else {
-          showMsg('msg-inv', 'err', '匯入失敗：' + (r.error||''));
-        }
+        if (r.success) { showMsg('msg-inv', 'ok', `✓ 匯入完成！新增 ${r.added} 筆，跳過已有商品 ${r.skipped} 筆`); loadInv(); }
+        else showMsg('msg-inv', 'err', '匯入失敗：' + (r.error||''));
       }).catch(err => showMsg('msg-inv', 'err', '連線失敗：' + err.message));
     } catch(e) { showMsg('msg-inv', 'err', '讀取檔案失敗：' + e.message); }
   };
