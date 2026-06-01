@@ -12,16 +12,18 @@
     --green: #2d6a4f; --green-light: #e8f5ee; --green-mid: #52b788;
     --red: #c1121f; --red-light: #fdecea;
     --amber: #b45309; --amber-light: #fef3c7;
+    --blue: #1e40af; --blue-light: #eff6ff;
     --radius: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 32px; position: sticky; top: 0; z-index: 100; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 24px; position: sticky; top: 0; z-index: 100; }
   .logo { font-size: 15px; font-weight: 700; color: var(--green); padding: 16px 0; letter-spacing: 0.5px; white-space: nowrap; }
-  .nav { display: flex; gap: 2px; }
-  .nav-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-2); border-radius: 8px; transition: all 0.15s; font-weight: 500; white-space: nowrap; }
+  .nav { display: flex; gap: 2px; flex-wrap: wrap; }
+  .nav-btn { padding: 8px 14px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-2); border-radius: 8px; transition: all 0.15s; font-weight: 500; white-space: nowrap; }
   .nav-btn:hover { background: var(--bg); color: var(--text); }
   .nav-btn.active { background: var(--green-light); color: var(--green); }
+  .nav-btn.active.warehouse { background: var(--blue-light); color: var(--blue); }
   .main { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
   .page { display: none; } .page.active { display: block; }
   .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
@@ -33,14 +35,17 @@
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
   .card-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; letter-spacing: 0.3px; display: flex; justify-content: space-between; align-items: center; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .field { display: flex; flex-direction: column; gap: 4px; }
   .field label { font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.3px; }
-  .field input, .field select { padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
-  .field input:focus, .field select:focus { border-color: var(--green-mid); background: var(--surface); }
+  .field input, .field select, .field textarea { padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green-mid); background: var(--surface); }
   .btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; cursor: pointer; background: var(--surface); color: var(--text); font-weight: 500; transition: all 0.15s; }
   .btn:hover { background: var(--bg); }
   .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
   .btn-primary:hover { background: #245c43; }
+  .btn-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-blue:hover { background: #1e3a8a; }
   .btn-sm { padding: 5px 12px; font-size: 12px; }
   .btn-discount { background: var(--amber-light); color: var(--amber); border-color: #fcd34d; font-weight: 700; }
   .btn-discount:hover { background: #fde68a; }
@@ -54,7 +59,6 @@
   .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
   .badge-ok { background: var(--green-light); color: var(--green); }
   .badge-out { background: var(--red-light); color: var(--red); }
-  .badge-disc { background: var(--amber); color: #fff; font-size: 10px; padding: 1px 6px; }
   .msg { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; font-weight: 500; display: none; }
   .msg-ok { background: var(--green-light); color: var(--green); display: block; }
   .msg-err { background: var(--red-light); color: var(--red); display: block; }
@@ -100,11 +104,13 @@
   .upload-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
   .col-hdr { display: grid; grid-template-columns: 2fr 80px 90px 80px auto; gap: 8px; margin-bottom: 6px; }
   .col-hdr span { font-size: 11px; font-weight: 700; color: var(--text-2); }
+  .wh-add-form { background: var(--bg); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; border: 1px solid var(--border); }
   @media (max-width: 640px) {
     .stat-grid { grid-template-columns: 1fr 1fr; } .grid-2 { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; } .item-row { grid-template-columns: 1fr 70px 80px auto; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .item-row { grid-template-columns: 1fr 70px 80px auto; }
     .col-hdr { grid-template-columns: 1fr 70px 80px auto; }
-    .header { padding: 0 14px; gap: 8px; } .nav-btn { padding: 8px 10px; font-size: 12px; } .main { padding: 16px 14px; }
+    .header { padding: 0 14px; gap: 8px; } .nav-btn { padding: 6px 8px; font-size: 12px; } .main { padding: 16px 14px; }
   }
 </style>
 </head>
@@ -116,6 +122,7 @@
     <button class="nav-btn" onclick="showPage('sale',this)">新增銷售</button>
     <button class="nav-btn" onclick="showPage('rec',this)">銷售紀錄</button>
     <button class="nav-btn" onclick="showPage('inv',this)">庫存管理</button>
+    <button class="nav-btn warehouse" onclick="showPage('wh',this)">總倉庫存</button>
   </nav>
 </header>
 <main class="main">
@@ -146,18 +153,11 @@
         <div class="field"><label>銷售日期</label><input type="date" id="s-date"></div>
         <div class="field"><label>客戶名稱</label><input type="text" id="s-customer" placeholder="輸入客戶姓名或公司名稱"></div>
       </div>
-      <div class="col-hdr">
-        <span>商品（可輸入關鍵字搜尋）</span><span>數量</span><span>單價</span><span>8折</span><span></span>
-      </div>
+      <div class="col-hdr"><span>商品（可輸入關鍵字搜尋）</span><span>數量</span><span>單價</span><span>8折</span><span></span></div>
       <div id="items-wrap"></div>
       <button class="btn btn-sm" onclick="addItem()" style="margin-bottom:16px">＋ 新增品項</button>
-
-      <!-- 結算 -->
       <div class="checkout-area">
-        <div class="co-row">
-          <span class="co-label">小計</span>
-          <span class="co-value" id="co-subtotal">$0</span>
-        </div>
+        <div class="co-row"><span class="co-label">小計</span><span class="co-value" id="co-subtotal">$0</span></div>
         <div class="co-row">
           <span class="co-label">整筆優惠（可多選）</span>
           <div class="disc-btns">
@@ -166,21 +166,11 @@
           </div>
         </div>
         <div id="co-disc-detail" style="display:none">
-          <div class="co-row" id="row-95" style="display:none">
-            <span class="co-label" style="color:var(--amber)">　↳ 95折折扣</span>
-            <span class="co-disc-amt" id="amt-95"></span>
-          </div>
-          <div class="co-row" id="row-50" style="display:none">
-            <span class="co-label" style="color:var(--amber)">　↳ 折抵 $50</span>
-            <span class="co-disc-amt" id="amt-50"></span>
-          </div>
+          <div class="co-row" id="row-95" style="display:none"><span class="co-label" style="color:var(--amber)">　↳ 95折折扣</span><span class="co-disc-amt" id="amt-95"></span></div>
+          <div class="co-row" id="row-50" style="display:none"><span class="co-label" style="color:var(--amber)">　↳ 折抵 $50</span><span class="co-disc-amt" id="amt-50"></span></div>
         </div>
-        <div class="co-total-row">
-          <span class="co-total-label">實收總金額</span>
-          <span class="co-total-value" id="co-total">$0</span>
-        </div>
+        <div class="co-total-row"><span class="co-total-label">實收總金額</span><span class="co-total-value" id="co-total">$0</span></div>
       </div>
-
       <div class="field" style="margin-top:14px;margin-bottom:12px"><label>備註</label><input type="text" id="s-note" placeholder="選填"></div>
       <div class="btn-row">
         <button class="btn" onclick="resetSale()">清除</button>
@@ -234,6 +224,40 @@
     </div>
   </div>
 
+  <!-- 總倉庫存 -->
+  <div id="page-wh" class="page">
+    <div class="card">
+      <div class="card-title">新增品項</div>
+      <div id="msg-wh-add" class="msg"></div>
+      <div class="wh-add-form">
+        <div class="form-row-3">
+          <div class="field"><label>品項名稱</label><input type="text" id="wh-name" placeholder="輸入品項名稱"></div>
+          <div class="field"><label>庫存數量</label><input type="number" id="wh-stock" min="0" placeholder="0"></div>
+          <div class="field"><label>備註</label><input type="text" id="wh-note" placeholder="選填"></div>
+        </div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn btn-blue" onclick="addWarehouseItem()">＋ 新增</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        總倉庫存清單
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="wh-search" placeholder="搜尋品項..." style="padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);outline:none;width:160px" oninput="filterWarehouse()">
+          <button class="btn btn-sm" onclick="loadWarehouse()">↻ 重新整理</button>
+        </div>
+      </div>
+      <div id="msg-wh" class="msg"></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>品項名稱</th><th style="text-align:right">庫存數量</th><th>備註</th><th style="text-align:center">操作</th></tr></thead>
+          <tbody id="wh-body"><tr><td colspan="4" class="empty">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -241,6 +265,7 @@ const API = 'https://script.google.com/macros/s/AKfycbyLux08_7XMSQ3S14KXhoT5NfcN
 let products = [], cbIdx = 0;
 const disc = { d95: false, d50: false };
 const pickers = {};
+let warehouseData = [];
 
 function jsonp(params) {
   return new Promise((resolve, reject) => {
@@ -268,6 +293,7 @@ function showPage(name, el) {
   if (name === 'dash') loadDash();
   if (name === 'sale') initSale();
   if (name === 'inv') loadInv();
+  if (name === 'wh') loadWarehouse();
 }
 
 /* 總覽 */
@@ -385,19 +411,12 @@ function calcTotal() {
     const ins = row.querySelectorAll('input[type="number"]');
     subtotal += (Number(ins[0].value)||0) * (Number(ins[1].value)||0);
   });
-
-  let after95 = subtotal;
   let d95amt = 0, d50amt = 0;
-
-  if (disc.d95) { d95amt = Math.round(subtotal * 0.05); after95 = subtotal - d95amt; }
-  if (disc.d50) { d50amt = Math.min(50, after95); }
-
-  const total = after95 - d50amt;
-  const totalDiscount = d95amt + d50amt;
-
+  if (disc.d95) { d95amt = Math.round(subtotal * 0.05); }
+  if (disc.d50) { d50amt = Math.min(50, subtotal - d95amt); }
+  const total = subtotal - d95amt - d50amt;
   document.getElementById('co-subtotal').textContent = fmt(subtotal);
   document.getElementById('co-total').textContent = fmt(total);
-
   const showDetail = disc.d95 || disc.d50;
   document.getElementById('co-disc-detail').style.display = showDetail ? 'block' : 'none';
   document.getElementById('row-95').style.display = disc.d95 ? 'flex' : 'none';
@@ -423,13 +442,10 @@ function submitSale() {
     items.push({ productId: p.id, productName: p.name, qty, price });
   });
   if (!valid || !items.length) { showMsg('msg-sale','err','請選擇商品並填寫有效數量'); return; }
-
   let subtotal = items.reduce((s,i)=>s+i.qty*i.price, 0);
-  let d95amt = 0, d50amt = 0;
-  if (disc.d95) { d95amt = Math.round(subtotal * 0.05); }
-  if (disc.d50) { d50amt = Math.min(50, subtotal - d95amt); }
+  let d95amt = disc.d95 ? Math.round(subtotal * 0.05) : 0;
+  let d50amt = disc.d50 ? Math.min(50, subtotal - d95amt) : 0;
   const totalDiscount = d95amt + d50amt;
-
   showMsg('msg-sale','load','儲存中...');
   jsonp({ action:'addSale', data: JSON.stringify({ customer, note, discount: totalDiscount, items }) })
     .then(r => {
@@ -532,6 +548,82 @@ function importXlsx(input) {
     }catch(e){showMsg('msg-inv','err','讀取失敗：'+e.message);}
   };
   reader.readAsBinaryString(file); input.value='';
+}
+
+/* 總倉庫存 */
+function loadWarehouse() {
+  showMsg('msg-wh','load','載入中...');
+  jsonp({action:'getWarehouse'}).then(data=>{
+    warehouseData = data||[];
+    document.getElementById('msg-wh').style.display='none';
+    renderWarehouse(warehouseData);
+  }).catch(err=>{ document.getElementById('wh-body').innerHTML=`<tr><td colspan="4" style="color:var(--red);padding:12px">載入失敗：${err.message}</td></tr>`; });
+}
+
+function filterWarehouse() {
+  const kw = document.getElementById('wh-search').value.toLowerCase();
+  const filtered = kw ? warehouseData.filter(w=>w.name.toLowerCase().includes(kw)) : warehouseData;
+  renderWarehouse(filtered);
+}
+
+function renderWarehouse(data) {
+  if(!data.length){
+    document.getElementById('wh-body').innerHTML='<tr><td colspan="4" class="empty">尚無品項，請從上方新增</td></tr>';
+    return;
+  }
+  document.getElementById('wh-body').innerHTML = data.map(w=>`
+    <tr id="wrow-${w.id}">
+      <td><strong>${escHtml(w.name)}</strong></td>
+      <td style="text-align:right;font-weight:500">${w.stock}</td>
+      <td style="color:var(--text-2);font-size:12px">${escHtml(w.note||'')}</td>
+      <td><div class="action-btns"><button class="btn btn-sm" onclick="startWhEdit('${w.id}')">編輯</button></div></td>
+    </tr>`).join('');
+}
+
+function addWarehouseItem() {
+  const name = document.getElementById('wh-name').value.trim();
+  const stock = Number(document.getElementById('wh-stock').value)||0;
+  const note = document.getElementById('wh-note').value.trim();
+  if(!name){showMsg('msg-wh-add','err','請填寫品項名稱');return;}
+  showMsg('msg-wh-add','load','新增中...');
+  jsonp({action:'addWarehouse',name,stock,note}).then(r=>{
+    if(r.success){
+      showMsg('msg-wh-add','ok','✓ 已新增品項');
+      document.getElementById('wh-name').value='';
+      document.getElementById('wh-stock').value='';
+      document.getElementById('wh-note').value='';
+      loadWarehouse();
+    } else showMsg('msg-wh-add','err','新增失敗：'+(r.error||''));
+  }).catch(err=>showMsg('msg-wh-add','err','連線失敗：'+err.message));
+}
+
+function startWhEdit(id) {
+  const w = warehouseData.find(x=>x.id==id); if(!w)return;
+  document.getElementById('wrow-'+id).innerHTML=`
+    <td><input class="edit-input" id="wn-${id}" value="${escHtml(w.name)}"></td>
+    <td><input class="edit-input" id="ws-${id}" type="number" min="0" value="${w.stock}" style="text-align:right"></td>
+    <td><input class="edit-input" id="wt-${id}" value="${escHtml(w.note||'')}"></td>
+    <td><div class="action-btns">
+      <button class="btn btn-sm btn-blue" onclick="saveWhEdit('${id}')">儲存</button>
+      <button class="btn btn-sm" onclick="renderWarehouse(warehouseData)">取消</button>
+    </div></td>`;
+  document.getElementById('wn-'+id).focus();
+}
+
+function saveWhEdit(id) {
+  const name=document.getElementById('wn-'+id).value.trim();
+  const stock=Number(document.getElementById('ws-'+id).value)||0;
+  const note=document.getElementById('wt-'+id).value.trim();
+  if(!name){showMsg('msg-wh','err','品項名稱不可空白');return;}
+  showMsg('msg-wh','load','儲存中...');
+  jsonp({action:'updateWarehouse',id,name,stock,note}).then(r=>{
+    if(r.success){
+      const w=warehouseData.find(x=>x.id==id);
+      if(w){w.name=name;w.stock=stock;w.note=note;}
+      renderWarehouse(warehouseData);
+      showMsg('msg-wh','ok','✓ 已更新品項資料');
+    } else showMsg('msg-wh','err','儲存失敗：'+(r.error||''));
+  }).catch(err=>showMsg('msg-wh','err','連線失敗：'+err.message));
 }
 
 loadDash();
