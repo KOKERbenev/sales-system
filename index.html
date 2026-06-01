@@ -147,7 +147,7 @@
         <div class="field"><label>客戶名稱</label><input type="text" id="s-customer" placeholder="輸入客戶姓名或公司名稱"></div>
       </div>
       <div class="col-hdr">
-        <span>商品（可輸入關鍵字搜尋）</span><span>數量</span><span>單價</span><span>85折</span><span></span>
+        <span>商品（可輸入關鍵字搜尋）</span><span>數量</span><span>單價</span><span>8折</span><span></span>
       </div>
       <div id="items-wrap"></div>
       <button class="btn btn-sm" onclick="addItem()" style="margin-bottom:16px">＋ 新增品項</button>
@@ -345,30 +345,30 @@ function addItem() {
     </div></div>
     <div class="field" style="margin:0"><input type="number" min="1" value="1" oninput="calcTotal()"></div>
     <div class="field" style="margin:0"><input type="number" min="0" value="0" class="pf" oninput="calcTotal()"></div>
-    <div class="field" style="margin:0"><button class="btn btn-sm btn-discount" id="b85-${idx}" onclick="toggle85(this,'${idx}')" style="width:100%">85折</button></div>
+    <div class="field" style="margin:0"><button class="btn btn-sm btn-discount" id="b80-${idx}" onclick="toggle80(this,'${idx}')" style="width:100%">8折</button></div>
     <button class="del-btn" onclick="document.getElementById('${idx}').remove();calcTotal()" title="刪除">✕</button>`;
   document.getElementById('items-wrap').appendChild(div);
   const picker = createPicker('pw-'+idx);
   pickers[idx] = picker;
   document.getElementById('pw-'+idx).addEventListener('picked', e=>{
     div.querySelector('.pf').value = e.detail.price||0;
-    const b = document.getElementById('b85-'+idx);
-    b.classList.remove('on'); b.textContent='85折'; b.dataset.orig='';
+    const b = document.getElementById('b80-'+idx);
+    b.classList.remove('on'); b.textContent='8折'; b.dataset.orig='';
     calcTotal();
   });
 }
 
-function toggle85(btn, idx) {
+function toggle80(btn, idx) {
   const row = document.getElementById(idx);
   const pf = row.querySelector('.pf');
   if (btn.classList.contains('on')) {
     pf.value = btn.dataset.orig || pf.value;
-    btn.classList.remove('on'); btn.textContent='85折'; btn.dataset.orig='';
+    btn.classList.remove('on'); btn.textContent='8折'; btn.dataset.orig='';
   } else {
     const orig = Number(pf.value);
     btn.dataset.orig = orig;
-    pf.value = Math.round(orig * 0.85);
-    btn.classList.add('on'); btn.textContent='已85折';
+    pf.value = Math.round(orig * 0.80);
+    btn.classList.add('on'); btn.textContent='已8折';
   }
   calcTotal();
 }
