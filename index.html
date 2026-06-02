@@ -18,42 +18,46 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
   .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 24px; position: sticky; top: 0; z-index: 100; }
-  .logo { font-size: 15px; font-weight: 700; color: var(--green); padding: 16px 0; letter-spacing: 0.5px; white-space: nowrap; }
+  .logo { font-size: 15px; font-weight: 700; color: var(--green); padding: 16px 0; white-space: nowrap; }
   .nav { display: flex; gap: 2px; flex-wrap: wrap; }
-  .nav-btn { padding: 8px 14px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-2); border-radius: 8px; transition: all 0.15s; font-weight: 500; white-space: nowrap; }
+  .nav-btn { padding: 8px 14px; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-2); border-radius: 8px; font-weight: 500; white-space: nowrap; transition: all 0.15s; }
   .nav-btn:hover { background: var(--bg); color: var(--text); }
   .nav-btn.active { background: var(--green-light); color: var(--green); }
-  .nav-btn.active.warehouse { background: var(--blue-light); color: var(--blue); }
-  .main { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
+  .nav-btn.wh.active { background: var(--blue-light); color: var(--blue); }
+  .main { max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
   .page { display: none; } .page.active { display: block; }
-  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
-  .stat-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
-  .stat-value { font-size: 24px; font-weight: 700; }
-  .stat-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .stat-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .stat-value.red { color: var(--red); }
+  .stat-value.amber { color: var(--amber); }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
-  .card-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; letter-spacing: 0.3px; display: flex; justify-content: space-between; align-items: center; }
+  .card-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .field { display: flex; flex-direction: column; gap: 4px; }
-  .field label { font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.3px; }
-  .field input, .field select, .field textarea { padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green-mid); background: var(--surface); }
-  .btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; cursor: pointer; background: var(--surface); color: var(--text); font-weight: 500; transition: all 0.15s; }
+  .field label { font-size: 11px; font-weight: 500; color: var(--text-2); }
+  .field input, .field select { padding: 8px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; width: 100%; transition: border-color 0.15s; }
+  .field input:focus, .field select:focus { border-color: var(--green-mid); background: var(--surface); }
+  .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; cursor: pointer; background: var(--surface); color: var(--text); font-weight: 500; transition: all 0.15s; }
   .btn:hover { background: var(--bg); }
   .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
   .btn-primary:hover { background: #245c43; }
+  .btn-danger { background: var(--red-light); color: var(--red); border-color: var(--red); }
+  .btn-danger:hover { background: #fca5a5; }
   .btn-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
   .btn-blue:hover { background: #1e3a8a; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
   .btn-discount { background: var(--amber-light); color: var(--amber); border-color: #fcd34d; font-weight: 700; }
-  .btn-discount:hover { background: #fde68a; }
   .btn-discount.on { background: var(--amber); color: #fff; border-color: var(--amber); }
   .btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid var(--border); background: var(--bg); }
-  tbody td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  thead th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: var(--bg); }
+  tbody td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: #fafaf8; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
@@ -104,12 +108,15 @@
   .upload-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
   .col-hdr { display: grid; grid-template-columns: 2fr 80px 90px 80px auto; gap: 8px; margin-bottom: 6px; }
   .col-hdr span { font-size: 11px; font-weight: 700; color: var(--text-2); }
-  .wh-add-form { background: var(--bg); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; width: 420px; max-width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
   @media (max-width: 640px) {
-    .stat-grid { grid-template-columns: 1fr 1fr; } .grid-2 { grid-template-columns: 1fr; }
-    .form-row, .form-row-3 { grid-template-columns: 1fr; }
-    .item-row { grid-template-columns: 1fr 70px 80px auto; }
-    .col-hdr { grid-template-columns: 1fr 70px 80px auto; }
+    .stat-grid { grid-template-columns: 1fr 1fr; } .stat-grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; } .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .item-row { grid-template-columns: 1fr 70px 80px auto; } .col-hdr { grid-template-columns: 1fr 70px 80px auto; }
     .header { padding: 0 14px; gap: 8px; } .nav-btn { padding: 6px 8px; font-size: 12px; } .main { padding: 16px 14px; }
   }
 </style>
@@ -122,7 +129,7 @@
     <button class="nav-btn" onclick="showPage('sale',this)">新增銷售</button>
     <button class="nav-btn" onclick="showPage('rec',this)">銷售紀錄</button>
     <button class="nav-btn" onclick="showPage('inv',this)">庫存管理</button>
-    <button class="nav-btn warehouse" onclick="showPage('wh',this)">總倉庫存</button>
+    <button class="nav-btn wh" onclick="showPage('wh',this)">總倉庫存</button>
   </nav>
 </header>
 <main class="main">
@@ -131,12 +138,16 @@
   <div id="page-dash" class="page active">
     <div id="msg-dash" class="msg msg-load">連線中...</div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-label">今日銷售額</div><div class="stat-value" id="d-today">—</div></div>
-      <div class="stat-card"><div class="stat-label">本月銷售額</div><div class="stat-value" id="d-month">—</div></div>
+      <div class="stat-card"><div class="stat-label">今日實收金額</div><div class="stat-value" id="d-today">—</div></div>
+      <div class="stat-card"><div class="stat-label">本月實收金額</div><div class="stat-value" id="d-month">—</div></div>
       <div class="stat-card"><div class="stat-label">本月筆數</div><div class="stat-value" id="d-count">—</div><div class="stat-sub" id="d-avg"></div></div>
     </div>
+    <div class="stat-grid-2">
+      <div class="stat-card"><div class="stat-label">今日折扣總額</div><div class="stat-value amber" id="d-today-disc">—</div></div>
+      <div class="stat-card"><div class="stat-label">本月折扣總額</div><div class="stat-value amber" id="d-month-disc">—</div></div>
+    </div>
     <div class="grid-2">
-      <div class="card"><div class="card-title">近 6 個月銷售</div><div class="bar-wrap" id="d-chart"><div class="empty">載入中...</div></div></div>
+      <div class="card"><div class="card-title">近 6 個月實收銷售</div><div class="bar-wrap" id="d-chart"><div class="empty">載入中...</div></div></div>
       <div class="card"><div class="card-title">熱銷商品 Top 5</div>
         <table><thead><tr><th>商品名稱</th><th style="text-align:right">金額</th></tr></thead>
         <tbody id="d-top"><tr><td colspan="2" class="empty">載入中...</td></tr></tbody></table>
@@ -193,8 +204,8 @@
       <div id="msg-rec" class="msg"></div>
       <div style="overflow-x:auto">
         <table>
-          <thead><tr><th>日期</th><th>客戶</th><th>商品明細</th><th style="text-align:right">小計</th><th style="text-align:right">折扣</th><th style="text-align:right">實收</th><th>備註</th></tr></thead>
-          <tbody id="rec-body"><tr><td colspan="7" class="empty">請點「搜尋」載入資料</td></tr></tbody>
+          <thead><tr><th>日期</th><th>客戶</th><th>商品明細</th><th style="text-align:right">小計</th><th style="text-align:right">折扣</th><th style="text-align:right">實收</th><th>備註</th><th style="text-align:center">操作</th></tr></thead>
+          <tbody id="rec-body"><tr><td colspan="8" class="empty">請點「搜尋」載入資料</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -229,16 +240,12 @@
     <div class="card">
       <div class="card-title">新增品項</div>
       <div id="msg-wh-add" class="msg"></div>
-      <div class="wh-add-form">
-        <div class="form-row-3">
-          <div class="field"><label>品項名稱</label><input type="text" id="wh-name" placeholder="輸入品項名稱"></div>
-          <div class="field"><label>庫存數量</label><input type="number" id="wh-stock" min="0" placeholder="0"></div>
-          <div class="field"><label>備註</label><input type="text" id="wh-note" placeholder="選填"></div>
-        </div>
-        <div class="btn-row" style="margin-top:8px">
-          <button class="btn btn-blue" onclick="addWarehouseItem()">＋ 新增</button>
-        </div>
+      <div class="form-row-3">
+        <div class="field"><label>品項名稱</label><input type="text" id="wh-name" placeholder="輸入品項名稱"></div>
+        <div class="field"><label>庫存數量</label><input type="number" id="wh-stock" min="0" placeholder="0"></div>
+        <div class="field"><label>備註</label><input type="text" id="wh-note" placeholder="選填"></div>
       </div>
+      <div class="btn-row" style="margin-top:4px"><button class="btn btn-blue" onclick="addWarehouseItem()">＋ 新增</button></div>
     </div>
     <div class="card">
       <div class="card-title">
@@ -257,8 +264,29 @@
       </div>
     </div>
   </div>
-
 </main>
+
+<!-- 編輯銷售紀錄 Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">修改銷售紀錄</div>
+    <input type="hidden" id="edit-sale-id">
+    <div class="form-row">
+      <div class="field"><label>日期</label><input type="date" id="edit-date"></div>
+      <div class="field"><label>客戶名稱</label><input type="text" id="edit-customer"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>折扣金額</label><input type="number" id="edit-discount" min="0" placeholder="0"></div>
+      <div class="field"><label>備註</label><input type="text" id="edit-note" placeholder="選填"></div>
+    </div>
+    <div id="msg-edit" class="msg"></div>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeEditModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEditSale()">儲存</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyLux08_7XMSQ3S14KXhoT5NfcN99ywLIrVNTYPGvqyxB7GI_x7t44YrpQOKsHqqCZLKg/exec';
@@ -266,6 +294,7 @@ let products = [], cbIdx = 0;
 const disc = { d95: false, d50: false };
 const pickers = {};
 let warehouseData = [];
+let recData = [];
 
 function jsonp(params) {
   return new Promise((resolve, reject) => {
@@ -305,6 +334,8 @@ function loadDash() {
     document.getElementById('d-month').textContent = fmt(d.monthTotal);
     document.getElementById('d-count').textContent = (d.monthCount||0) + ' 筆';
     document.getElementById('d-avg').textContent = d.monthCount ? '平均單筆 '+fmt((d.monthTotal||0)/d.monthCount) : '';
+    document.getElementById('d-today-disc').textContent = fmt(d.todayDiscount||0);
+    document.getElementById('d-month-disc').textContent = fmt(d.monthDiscount||0);
     const monthly = d.monthly||[], maxV = Math.max(...monthly.map(m=>m.total),1);
     document.getElementById('d-chart').innerHTML = monthly.length
       ? monthly.map(m=>`<div class="bar-row"><span class="bar-label">${(m.month||'').slice(5)}月</span><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(m.total/maxV*100)}%"><span class="bar-val">${fmt(m.total)}</span></div></div></div>`).join('')
@@ -316,7 +347,7 @@ function loadDash() {
   }).catch(err => showMsg('msg-dash','err','連線失敗：'+err.message));
 }
 
-/* 搜尋選擇器 */
+/* 商品搜尋選擇器 */
 function createPicker(wrapperId) {
   const wrap = document.getElementById(wrapperId);
   const input = wrap.querySelector('.prod-search-input');
@@ -359,7 +390,6 @@ function initSale() {
   jsonp({action:'getProducts'}).then(d=>{ products=d||[]; addItem(); }).catch(()=>{ products=[]; addItem(); });
   calcTotal();
 }
-
 function addItem() {
   const idx = 'i'+Date.now();
   const div = document.createElement('div');
@@ -383,37 +413,31 @@ function addItem() {
     calcTotal();
   });
 }
-
 function toggle80(btn, idx) {
-  const row = document.getElementById(idx);
-  const pf = row.querySelector('.pf');
+  const pf = document.getElementById(idx).querySelector('.pf');
   if (btn.classList.contains('on')) {
     pf.value = btn.dataset.orig || pf.value;
     btn.classList.remove('on'); btn.textContent='8折'; btn.dataset.orig='';
   } else {
     const orig = Number(pf.value);
-    btn.dataset.orig = orig;
-    pf.value = Math.round(orig * 0.80);
+    btn.dataset.orig = orig; pf.value = Math.round(orig * 0.80);
     btn.classList.add('on'); btn.textContent='已8折';
   }
   calcTotal();
 }
-
 function toggleDiscount(key) {
   disc[key] = !disc[key];
   document.getElementById(key==='d95'?'btn-95':'btn-50').classList.toggle('on', disc[key]);
   calcTotal();
 }
-
 function calcTotal() {
   let subtotal = 0;
   document.querySelectorAll('.item-row').forEach(row => {
     const ins = row.querySelectorAll('input[type="number"]');
     subtotal += (Number(ins[0].value)||0) * (Number(ins[1].value)||0);
   });
-  let d95amt = 0, d50amt = 0;
-  if (disc.d95) { d95amt = Math.round(subtotal * 0.05); }
-  if (disc.d50) { d50amt = Math.min(50, subtotal - d95amt); }
+  let d95amt = disc.d95 ? Math.round(subtotal * 0.05) : 0;
+  let d50amt = disc.d50 ? Math.min(50, subtotal - d95amt) : 0;
   const total = subtotal - d95amt - d50amt;
   document.getElementById('co-subtotal').textContent = fmt(subtotal);
   document.getElementById('co-total').textContent = fmt(total);
@@ -421,12 +445,10 @@ function calcTotal() {
   document.getElementById('co-disc-detail').style.display = showDetail ? 'block' : 'none';
   document.getElementById('row-95').style.display = disc.d95 ? 'flex' : 'none';
   document.getElementById('row-50').style.display = disc.d50 ? 'flex' : 'none';
-  if (disc.d95) document.getElementById('amt-95').textContent = '-' + fmt(d95amt);
-  if (disc.d50) document.getElementById('amt-50').textContent = '-' + fmt(d50amt);
+  if (disc.d95) document.getElementById('amt-95').textContent = '-'+fmt(d95amt);
+  if (disc.d50) document.getElementById('amt-50').textContent = '-'+fmt(d50amt);
 }
-
 function resetSale() { initSale(); }
-
 function submitSale() {
   const date = document.getElementById('s-date').value;
   const customer = document.getElementById('s-customer').value.trim();
@@ -434,8 +456,7 @@ function submitSale() {
   if (!date || !customer) { showMsg('msg-sale','err','請填寫日期與客戶名稱'); return; }
   const items = []; let valid = true;
   document.querySelectorAll('.item-row').forEach(row => {
-    const picker = pickers[row.id];
-    const p = picker ? picker.get() : null;
+    const picker = pickers[row.id]; const p = picker ? picker.get() : null;
     const ins = row.querySelectorAll('input[type="number"]');
     const qty = Number(ins[0].value), price = Number(ins[1].value);
     if (!p || qty <= 0) { valid = false; return; }
@@ -445,9 +466,8 @@ function submitSale() {
   let subtotal = items.reduce((s,i)=>s+i.qty*i.price, 0);
   let d95amt = disc.d95 ? Math.round(subtotal * 0.05) : 0;
   let d50amt = disc.d50 ? Math.min(50, subtotal - d95amt) : 0;
-  const totalDiscount = d95amt + d50amt;
   showMsg('msg-sale','load','儲存中...');
-  jsonp({ action:'addSale', data: JSON.stringify({ customer, note, discount: totalDiscount, items }) })
+  jsonp({ action:'addSale', data: JSON.stringify({ customer, note, discount: d95amt+d50amt, items }) })
     .then(r => {
       if (r.success) { showMsg('msg-sale','ok','✓ 銷售紀錄已儲存，庫存已自動扣減！'); resetSale(); }
       else showMsg('msg-sale','err','儲存失敗：'+(r.error||''));
@@ -460,27 +480,81 @@ function loadRec() {
   showMsg('msg-rec','load','載入中...');
   jsonp({action:'getSales',keyword:kw,from,to}).then(data => {
     document.getElementById('msg-rec').style.display='none';
-    const rows=data||[];
-    document.getElementById('rec-body').innerHTML = rows.length
-      ? rows.map(r=>{
-          const detail=(r.items||[]).map(i=>`${i.productName} ×${i.qty}`).join('、');
-          const hasDisc = Number(r.discount)>0;
-          return `<tr><td>${r.date}</td><td><strong>${escHtml(r.customer)}</strong></td>
-            <td style="color:var(--text-2);font-size:12px">${escHtml(detail)}</td>
-            <td style="text-align:right">${fmt(r.subtotal)}</td>
-            <td style="text-align:right;color:var(--amber);font-weight:${hasDisc?'700':'400'}">${hasDisc?'-'+fmt(r.discount):'—'}</td>
-            <td style="text-align:right;font-weight:700">${fmt(r.total)}</td>
-            <td style="color:var(--text-3);font-size:12px">${escHtml(r.note||'')}</td></tr>`;
-        }).join('')
-      : '<tr><td colspan="7" class="empty">查無符合條件的資料</td></tr>';
+    recData = data||[];
+    renderRec(recData);
   }).catch(err=>showMsg('msg-rec','err','載入失敗：'+err.message));
+}
+function renderRec(rows) {
+  document.getElementById('rec-body').innerHTML = rows.length
+    ? rows.map(r=>{
+        const detail=(r.items||[]).map(i=>`${i.productName} ×${i.qty}`).join('、');
+        const hasDisc = Number(r.discount)>0;
+        const discStr = hasDisc ? '-'+fmt(r.discount) : '—';
+        return `<tr>
+          <td>${r.date}</td>
+          <td><strong>${escHtml(r.customer)}</strong></td>
+          <td style="color:var(--text-2);font-size:12px">${escHtml(detail)}</td>
+          <td style="text-align:right">${fmt(r.subtotal)}</td>
+          <td style="text-align:right;color:${hasDisc?'var(--amber)':'var(--text-3)'};font-weight:${hasDisc?'700':'400'}">${discStr}</td>
+          <td style="text-align:right;font-weight:700;color:var(--green)">${fmt(r.total)}</td>
+          <td style="color:var(--text-3);font-size:12px">${escHtml(r.note||'')}</td>
+          <td><div class="action-btns">
+            <button class="btn btn-sm" onclick="openEditModal('${r.id}')">修改</button>
+            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${r.id}','${escHtml(r.customer)}')">刪單</button>
+          </div></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="8" class="empty">查無符合條件的資料</td></tr>';
+}
+
+/* 修改銷售紀錄 Modal */
+function openEditModal(saleId) {
+  const r = recData.find(x => String(x.id) === String(saleId));
+  if (!r) return;
+  document.getElementById('edit-sale-id').value = saleId;
+  document.getElementById('edit-date').value = r.date;
+  document.getElementById('edit-customer').value = r.customer;
+  document.getElementById('edit-discount').value = r.discount || 0;
+  document.getElementById('edit-note').value = r.note || '';
+  document.getElementById('msg-edit').style.display = 'none';
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+function saveEditSale() {
+  const saleId = document.getElementById('edit-sale-id').value;
+  const date = document.getElementById('edit-date').value;
+  const customer = document.getElementById('edit-customer').value.trim();
+  const discount = Number(document.getElementById('edit-discount').value) || 0;
+  const note = document.getElementById('edit-note').value.trim();
+  if (!date || !customer) { showMsg('msg-edit','err','請填寫日期與客戶名稱'); return; }
+  showMsg('msg-edit','load','儲存中...');
+  jsonp({ action:'updateSaleInfo', saleId, date, customer, discount, note })
+    .then(r => {
+      if (r.success) {
+        closeEditModal();
+        showMsg('msg-rec','ok','✓ 已更新銷售紀錄');
+        loadRec();
+      } else showMsg('msg-edit','err','儲存失敗：'+(r.error||''));
+    }).catch(err => showMsg('msg-edit','err','連線失敗：'+err.message));
+}
+
+/* 刪單 */
+function confirmDelete(saleId, customer) {
+  if (!confirm(`確定要刪除「${customer}」這筆銷售紀錄嗎？\n刪除後庫存將自動還原，此操作無法復原。`)) return;
+  jsonp({ action:'deleteSale', saleId })
+    .then(r => {
+      if (r.success) { showMsg('msg-rec','ok','✓ 已刪除銷售紀錄，庫存已還原'); loadRec(); }
+      else showMsg('msg-rec','err','刪除失敗：'+(r.error||''));
+    }).catch(err => showMsg('msg-rec','err','連線失敗：'+err.message));
 }
 
 function exportXlsx() {
   const rows=[['日期','客戶名稱','商品明細','小計','折扣','實收金額','備註']];
   document.querySelectorAll('#rec-body tr').forEach(tr=>{
     const tds=tr.querySelectorAll('td');
-    if(tds.length>=6) rows.push([tds[0].textContent,tds[1].textContent,tds[2].textContent,tds[3].textContent,tds[4].textContent,tds[5].textContent,tds[6]?.textContent||'']);
+    if(tds.length>=7) rows.push([tds[0].textContent,tds[1].textContent,tds[2].textContent,tds[3].textContent,tds[4].textContent,tds[5].textContent,tds[6]?.textContent||'']);
   });
   if(rows.length<=1){alert('請先搜尋載入資料再匯出');return;}
   const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:18},{wch:30},{wch:10},{wch:10},{wch:12},{wch:20}];
@@ -554,24 +628,18 @@ function importXlsx(input) {
 function loadWarehouse() {
   showMsg('msg-wh','load','載入中...');
   jsonp({action:'getWarehouse'}).then(data=>{
-    warehouseData = data||[];
+    warehouseData=data||[];
     document.getElementById('msg-wh').style.display='none';
     renderWarehouse(warehouseData);
   }).catch(err=>{ document.getElementById('wh-body').innerHTML=`<tr><td colspan="4" style="color:var(--red);padding:12px">載入失敗：${err.message}</td></tr>`; });
 }
-
 function filterWarehouse() {
-  const kw = document.getElementById('wh-search').value.toLowerCase();
-  const filtered = kw ? warehouseData.filter(w=>w.name.toLowerCase().includes(kw)) : warehouseData;
-  renderWarehouse(filtered);
+  const kw=document.getElementById('wh-search').value.toLowerCase();
+  renderWarehouse(kw ? warehouseData.filter(w=>w.name.toLowerCase().includes(kw)) : warehouseData);
 }
-
 function renderWarehouse(data) {
-  if(!data.length){
-    document.getElementById('wh-body').innerHTML='<tr><td colspan="4" class="empty">尚無品項，請從上方新增</td></tr>';
-    return;
-  }
-  document.getElementById('wh-body').innerHTML = data.map(w=>`
+  if(!data.length){document.getElementById('wh-body').innerHTML='<tr><td colspan="4" class="empty">尚無品項，請從上方新增</td></tr>';return;}
+  document.getElementById('wh-body').innerHTML=data.map(w=>`
     <tr id="wrow-${w.id}">
       <td><strong>${escHtml(w.name)}</strong></td>
       <td style="text-align:right;font-weight:500">${w.stock}</td>
@@ -579,11 +647,10 @@ function renderWarehouse(data) {
       <td><div class="action-btns"><button class="btn btn-sm" onclick="startWhEdit('${w.id}')">編輯</button></div></td>
     </tr>`).join('');
 }
-
 function addWarehouseItem() {
-  const name = document.getElementById('wh-name').value.trim();
-  const stock = Number(document.getElementById('wh-stock').value)||0;
-  const note = document.getElementById('wh-note').value.trim();
+  const name=document.getElementById('wh-name').value.trim();
+  const stock=Number(document.getElementById('wh-stock').value)||0;
+  const note=document.getElementById('wh-note').value.trim();
   if(!name){showMsg('msg-wh-add','err','請填寫品項名稱');return;}
   showMsg('msg-wh-add','load','新增中...');
   jsonp({action:'addWarehouse',name,stock,note}).then(r=>{
@@ -596,9 +663,8 @@ function addWarehouseItem() {
     } else showMsg('msg-wh-add','err','新增失敗：'+(r.error||''));
   }).catch(err=>showMsg('msg-wh-add','err','連線失敗：'+err.message));
 }
-
 function startWhEdit(id) {
-  const w = warehouseData.find(x=>x.id==id); if(!w)return;
+  const w=warehouseData.find(x=>x.id==id); if(!w)return;
   document.getElementById('wrow-'+id).innerHTML=`
     <td><input class="edit-input" id="wn-${id}" value="${escHtml(w.name)}"></td>
     <td><input class="edit-input" id="ws-${id}" type="number" min="0" value="${w.stock}" style="text-align:right"></td>
@@ -609,7 +675,6 @@ function startWhEdit(id) {
     </div></td>`;
   document.getElementById('wn-'+id).focus();
 }
-
 function saveWhEdit(id) {
   const name=document.getElementById('wn-'+id).value.trim();
   const stock=Number(document.getElementById('ws-'+id).value)||0;
@@ -617,14 +682,15 @@ function saveWhEdit(id) {
   if(!name){showMsg('msg-wh','err','品項名稱不可空白');return;}
   showMsg('msg-wh','load','儲存中...');
   jsonp({action:'updateWarehouse',id,name,stock,note}).then(r=>{
-    if(r.success){
-      const w=warehouseData.find(x=>x.id==id);
-      if(w){w.name=name;w.stock=stock;w.note=note;}
-      renderWarehouse(warehouseData);
-      showMsg('msg-wh','ok','✓ 已更新品項資料');
-    } else showMsg('msg-wh','err','儲存失敗：'+(r.error||''));
+    if(r.success){const w=warehouseData.find(x=>x.id==id);if(w){w.name=name;w.stock=stock;w.note=note;}renderWarehouse(warehouseData);showMsg('msg-wh','ok','✓ 已更新品項資料');}
+    else showMsg('msg-wh','err','儲存失敗：'+(r.error||''));
   }).catch(err=>showMsg('msg-wh','err','連線失敗：'+err.message));
 }
+
+// 點擊 modal 外部關閉
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
 
 loadDash();
 </script>
