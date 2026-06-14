@@ -353,7 +353,16 @@ function createPicker(wrapperId) {
   const input = wrap.querySelector('.prod-search-input');
   const dropdown = wrap.querySelector('.prod-dropdown');
   let sel = null, hlIdx = -1, items = [];
-  function filter(kw) { return kw.trim() ? products.filter(p=>p.name.toLowerCase().includes(kw.toLowerCase())) : products; }
+  function filter(kw) {
+    if (!kw.trim()) return products;
+    const k = kw.toLowerCase().trim();
+    // 如果是純數字，優先比對商品編號開頭（例如輸入121只顯示121-開頭的商品）
+    if (/^\d+$/.test(k)) {
+      const exact = products.filter(p => p.name.toLowerCase().startsWith(k + '-') || p.name.toLowerCase().startsWith(k + ' '));
+      if (exact.length > 0) return exact;
+    }
+    return products.filter(p => p.name.toLowerCase().includes(k));
+  }
   function render(kw) {
     items = filter(kw); hlIdx = -1;
     dropdown.innerHTML = items.length
